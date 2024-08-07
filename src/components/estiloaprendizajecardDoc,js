@@ -1,0 +1,36 @@
+/**
+ * @file EstiloAprendizajeCard.vue
+ * @description Componente para representar una tarjeta de estilo de aprendizaje.
+ * @module EstiloAprendizajeCard
+ */
+
+/**
+ * La sección de plantilla del componente.
+ *
+ * @typedef {object} Template
+ * @property {string[]} class - Clases CSS aplicadas al contenedor de la tarjeta, incluye una clase condicional `selected` basada en la propiedad `isSelected`.
+ * @property {object} img - Imagen del estilo de aprendizaje.
+ * @property {string} alt - Texto alternativo para la imagen del estilo de aprendizaje.
+ * @property {div} - Contenedor del nombre del estilo de aprendizaje.
+ */
+
+/**
+ * La sección de script del componente.
+ *
+ * @typedef {object} Script
+ * @property {object} props - Propiedades que acepta el componente.
+ * @property {object} props.estilo - Objeto que representa un estilo de aprendizaje con propiedades `nombre` e `imagen`.
+ * @property {boolean} props.isSelected - Indica si el estilo de aprendizaje está seleccionado.
+ * @property {object} methods - Métodos del componente.
+ * @property {function} methods.selectEstilo - Método que emite el evento `select-estilo` con el estilo de aprendizaje seleccionado.
+ */
+
+/**
+ * La sección de estilo del componente.
+ *
+ * @typedef {object} Style
+ * @property {string} scoped - Define que los estilos son específicos para este componente.
+ * @property {string} .card - Clase CSS para el contenedor de la tarjeta de estilo de aprendizaje.
+ * @property {string} .card img - Estilos para la imagen dentro de la tarjeta.
+ * @property {string} .selected - Estilos aplicados cuando la tarjeta está seleccionada.
+ */
