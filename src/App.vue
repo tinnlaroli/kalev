@@ -36,7 +36,12 @@
           </v-btn>
         </v-col>
         <v-col cols="12" sm="">
-          <v-btn rounded="xl" size="x-large" block>
+          
+          <v-btn 
+            rounded="xl"
+            size="x-large"
+            block
+            @click="showGrupos">
             <v-icon left>mdi-account-group</v-icon> GRUPOS
           </v-btn>
         </v-col>
@@ -46,12 +51,17 @@
     <!-- Columna Central -->
     <div class="column-cent">
       <!-- Contenido Inicial -->
-      <div v-if="!mostrarContenidoCurso && !mostrarContenidoActividad && !MostrarVentanaCursosExistentes && !mostrarActividades" class="content0">
+      <div v-if="!mostrarContenidoCurso && !mostrarContenidoActividad && !MostrarVentanaCursosExistentes && !mostrarActividades && !showGruposContent" class="content0">
         <v-card class="pa-5" outlined>
           <h1 class="title text-center">KALEV</h1>
           <p class="text-center">
             EN BUSQUEDA DE <span id="titulos"></span>
           </p>
+          <img
+            src="./components/icons/kalev.png"
+            class="mx-auto"
+            alt="Kalev Logo"
+          ></img>
         </v-card>
       </div>
 
@@ -139,9 +149,7 @@
           </v-card>
           <v-card v-if="selectedParcial" :title="content[selectedParcial].title" :subtitle="content[selectedParcial].subtitle" :prepend-icon="content[selectedParcial].prependIcon" :append-icon="content[selectedParcial].appendIcon" outlined>
             <v-card-actions>
-              <v-btn @click="showActividad" color="primary">Asignar calificaciones</v-btn>
-            </v-card-actions>
-          </v-card>
+              <v-btn @click="showActividad" color="primary">Asignar calificaciones</v-btn>imary        </v-card-actions>nar        </v-card>
           <v-card v-if="selectedParcial" :title="content[selectedParcial].title" :subtitle="content[selectedParcial].subtitle" :prepend-icon="content[selectedParcial].prependIcon" :append-icon="content[selectedParcial].appendIcon" outlined>
             <v-card-actions>
               <v-btn @click="showActividad" color="primary">Asignar calificaciones</v-btn>
@@ -149,14 +157,18 @@
           </v-card>
 
           <v-row v-if="showDiv">
-            <v-col>
-              <v-btn @click="showGroup('A')" icon>
+            <v-row>
+              <v-col cols="6">
+              <v-btn @click="showGroup('A')" icon block>
                 <v-icon>mdi-account-group</v-icon> GRUPO A
               </v-btn>
-              <v-btn @click="showGroup('B')" icon>
+              </v-col>
+              <v-col cols="6">
+              <v-btn @click="showGroup('B')" icon block>
                 <v-icon>mdi-account-group</v-icon> GRUPO B
               </v-btn>
-            </v-col>
+              </v-col>
+            </v-row>
           </v-row>
 
           <div v-if="currentGroup" class="gruposCalificaciones">
@@ -200,6 +212,9 @@
           </div>
         </v-card>
       </div>
+
+      <!-- -------------------------GRUPOS---------------------->
+      <Grupos v-if="showGruposContent" />
     </div>
 
     <!-- Columna Derecha -->
@@ -440,6 +455,7 @@ import MateriaCard from './components/MateriaCard.vue';
 import EstiloAprendizajeCard from './components/EstiloAprendizajeCard.vue';
 
 
+
 /*****************MOSTRAR DIVS************************/
 const mostrarContenidoCurso = ref(false);
 const mostrarContenidoActividad = ref(false);
@@ -447,21 +463,37 @@ const mostrarContenidoActividad = ref(false);
 const MostrarVentanaCursosExistentes = ref(false);
 const mostrarActividades = ref(false);
 
+const showGruposContent = ref(false);
+
+
+function showGrupos() {
+  showGruposContent.value = true;
+  mostrarContenidoActividad.value = false;
+  MostrarVentanaCursosExistentes.value = false;
+  mostrarActividades.value = false;
+  mostrarContenidoCurso.value = false;
+}
+
 function ventanaAgregarCurso() {
   mostrarContenidoCurso.value = true;
   mostrarContenidoActividad.value = false;
   MostrarVentanaCursosExistentes.value = false;
+  mostrarActividades.value = false;
 }
 
 function ventanaAgregarActividad() {
   mostrarContenidoActividad.value = true;
   mostrarContenidoCurso.value = false;
   MostrarVentanaCursosExistentes.value = false;
+  mostrarActividades.value = false;
+
 }
 function VentanaCursosExistentes(){
   MostrarVentanaCursosExistentes.value = true;
   mostrarContenidoActividad.value = false;
   mostrarContenidoCurso.value = false;
+  mostrarActividades.value = false;
+
 }
 function VentanaActividadesExistentes(){
   mostrarActividades.value = true;
