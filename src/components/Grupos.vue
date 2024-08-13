@@ -1,7 +1,7 @@
 
 <template>
 
-    <div v-if="showGruposContent">
+    <div>
         <v-row>
             <v-col cols="12" sm="4">
                 <v-select
@@ -34,7 +34,7 @@
             </v-col>
         </v-row>
 
-        <v-card class="mb-5" v-for="(students, grade) in filteredStudents" :key="grade" v-if="students.length">
+        <v-carad class="mb-5" v-for="(students, grade) in filteredStudents" :key="grade" v-if="students.length">
             <v-card-title>
                 <v-icon left>mdi-account-group</v-icon>
                 Alumnos de {{ grade }}
@@ -51,7 +51,7 @@
                     </template>
                 </v-data-table>
             </v-card-text>
-        </v-card>
+        </v-carad>
     </div>
 
 </template>

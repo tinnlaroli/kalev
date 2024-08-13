@@ -31,7 +31,11 @@
       </div>
       <div class="izq-aba">
         <v-col cols="12" sm="">
-          <v-btn rounded="xl" size="x-large" block @click="VentanaCursosExistentes">
+          <v-btn 
+            rounded="xl" 
+            size="x-large" 
+            block 
+            @click="VentanaCursosExistentes">
             <v-icon left>mdi-book-multiple</v-icon> CURSOS
           </v-btn>
         </v-col>
@@ -214,7 +218,40 @@
       </div>
 
       <!-- -------------------------GRUPOS---------------------->
-      <Grupos v-if="showGruposContent" />
+      <div v-if="showGruposContent">
+        <v-row>
+            <v-col cols="12" sm="4">
+                <v-select
+                    v-model="selectedGrade"
+                    :items="grades"
+                    label="Filtrar por Grado"
+                ></v-select>
+            </v-col>
+            <v-col cols="12" sm="4">
+                <v-select
+                    v-model="selectedGroup"
+                    :items="groups"
+                    label="Filtrar por Grupo"
+                ></v-select>
+            </v-col>
+            <v-col cols="12" sm="4">
+                <v-text-field
+                    v-model="search"
+                    append-icon="mdi-magnify"
+                    label="Buscar"
+                    single-line
+                    hide-details
+                ></v-text-field>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-btn @click="clearFilters">Mostrar Todos</v-btn>
+            </v-col>
+        </v-row>
+        
+      </div>
+
     </div>
 
     <!-- Columna Derecha -->
@@ -450,21 +487,16 @@ img{
 </style>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import MateriaCard from './components/MateriaCard.vue';
 import EstiloAprendizajeCard from './components/EstiloAprendizajeCard.vue';
-
-
 
 /*****************MOSTRAR DIVS************************/
 const mostrarContenidoCurso = ref(false);
 const mostrarContenidoActividad = ref(false);
-
 const MostrarVentanaCursosExistentes = ref(false);
 const mostrarActividades = ref(false);
-
 const showGruposContent = ref(false);
-
 
 function showGrupos() {
   showGruposContent.value = true;
@@ -479,6 +511,7 @@ function ventanaAgregarCurso() {
   mostrarContenidoActividad.value = false;
   MostrarVentanaCursosExistentes.value = false;
   mostrarActividades.value = false;
+  showGruposContent.value = false;
 }
 
 function ventanaAgregarActividad() {
@@ -486,19 +519,23 @@ function ventanaAgregarActividad() {
   mostrarContenidoCurso.value = false;
   MostrarVentanaCursosExistentes.value = false;
   mostrarActividades.value = false;
-
+  showGruposContent.value = false;
+  showGruposContent.value = false;
 }
-function VentanaCursosExistentes(){
+
+function VentanaCursosExistentes() {
   MostrarVentanaCursosExistentes.value = true;
   mostrarContenidoActividad.value = false;
   mostrarContenidoCurso.value = false;
   mostrarActividades.value = false;
-
+  showGruposContent.value = false;
 }
-function VentanaActividadesExistentes(){
+
+function VentanaActividadesExistentes() {
   mostrarActividades.value = true;
   mostrarContenidoActividad.value = false;
   mostrarContenidoCurso.value = false;
+  showGruposContent.value = false;
 }
 
 const showDiv = ref(false);
@@ -506,7 +543,6 @@ const showDiv = ref(false);
 const showActividad = () => {
   showDiv.value = true;
 };
-
 /****************************************************/
 
 // Datos de materias
@@ -529,6 +565,7 @@ const cursos = ref([
   { name: 'Curso 2', image: 'path/to/image2' }, 
   { name: 'Curso 3', image: 'path/to/image3' }
 ]);
+
 const parcial1 = ref(['Parcial 1', 'Parcial 2', 'Parcial 3']);
 const selectedParcial = ref(null);
 
@@ -563,6 +600,77 @@ const nombre = ref('');
 const descripcion = ref('');
 const parcial = ref('');
 const grupos = ref([]);
+
+// Datos de grupos y estudiantes
+const grades = ['Cuarto Grado', 'Quinto Grado', 'Sexto Grado'];
+const groups = ['A', 'B'];
+
+const fourth_grade_students = ref([
+  { first_name: 'Juan', last_name_paternal: 'Pérez', last_name_maternal: 'García', group: 'A' },
+  { first_name: 'María', last_name_paternal: 'Gómez', last_name_maternal: 'Rodríguez', group: 'B' },
+  // ...otros estudiantes del cuarto grado
+]);
+
+const fifth_grade_students = ref([
+  { first_name: 'Isabel', last_name_paternal: 'Martín', last_name_maternal: 'Suárez', group: 'A' },
+  { first_name: 'Gabriel', last_name_paternal: 'Lara', last_name_maternal: 'Durán', group: 'B' },
+  // ...otros estudiantes del quinto grado
+]);
+
+const sixth_grade_students = ref([
+  { first_name: 'Marcela', last_name_paternal: 'Ramírez', last_name_maternal: 'Padilla', group: 'A' },
+  { first_name: 'Rodrigo', last_name_paternal: 'Ponce', last_name_maternal: 'Moreno', group: 'B' },
+  // ...otros estudiantes del sexto grado
+]);
+
+const filteredStudents = computed(() => {
+  let allStudents = [
+    ...fourth_grade_students.value.map(s => ({ ...s, grade: 'Cuarto Grado' })),
+    ...fifth_grade_students.value.map(s => ({ ...s, grade: 'Quinto Grado' })),
+    ...sixth_grade_students.value.map(s => ({ ...s, grade: 'Sexto Grado' }))
+  ];
+
+  if (selectedGrade.value) {
+    allStudents = allStudents.filter(student => student.grade === selectedGrade.value);
+  }
+
+  if (selectedGroup.value) {
+    allStudents = allStudents.filter(student => student.group === selectedGroup.value);
+  }
+
+  if (search.value) {
+    const searchLower = search.value.toLowerCase();
+    allStudents = allStudents.filter(student =>
+      student.first_name.toLowerCase().includes(searchLower) ||
+      student.last_name_paternal.toLowerCase().includes(searchLower) ||
+      student.last_name_maternal.toLowerCase().includes(searchLower)
+    );
+  }
+
+  return {
+    'Cuarto Grado': allStudents.filter(s => s.grade === 'Cuarto Grado'),
+    'Quinto Grado': allStudents.filter(s => s.grade === 'Quinto Grado'),
+    'Sexto Grado': allStudents.filter(s => s.grade === 'Sexto Grado')
+  };
+});
+
+const search = ref('');
+const selectedGrade = ref('');
+const selectedGroup = ref('');
+
+function clearFilters() {
+  search.value = '';
+  selectedGrade.value = '';
+  selectedGroup.value = '';
+}
+
+function editItem(item) {
+  alert('Editar: ' + item.first_name + ' ' + item.last_name_paternal + ' ' + item.last_name_maternal + ' del grupo ' + item.group);
+}
+
+function deleteItem(item) {
+  alert('Eliminar: ' + item.first_name + ' ' + item.last_name_paternal + ' ' + item.last_name_maternal + ' del grupo ' + item.group);
+}
 
 function toggleMateriaSelection(materia) {
   const index = selectedMaterias.value.indexOf(materia);
