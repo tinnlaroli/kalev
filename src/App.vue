@@ -13,15 +13,15 @@
               <v-card-title class="justify-center nombre-perfil">Jaime Galindo</v-card-title>
               <v-card-subtitle class="justify-center escuela-perfil">Primaria: Benito Juárez</v-card-subtitle>
               <v-card-text class="text-center">
-                <v-icon color="primary">mdi-email</v-icon>
+                <v-icon color="#0081a7">mdi-email</v-icon>
                 <span class="ml-2 desc-perfil">gavilan@utcv.com</span>
               </v-card-text>
               <v-card-text class="text-center">
-                <v-icon color="primary">mdi-phone</v-icon>
+                <v-icon color="#0081a7">mdi-phone</v-icon>
                 <span class="ml-2 desc-perfil">+123 456 7890</span>
               </v-card-text>
               <v-card-text class="text-center">
-                <v-icon color="primary">mdi-map-marker</v-icon>
+                <v-icon color="#0081a7">mdi-map-marker</v-icon>
                 <span class="ml-2 desc-perfil">Cuitlahuac, Ver.</span>
               </v-card-text>
             </v-card>
@@ -930,7 +930,7 @@ export default {
 
 /*************************************************************************** */
 .content0 {
-  background-image: url('./assets/saludokalevchiquititito.png');
+  background-image: url('./assets/saludokalevchiquito.png');
 background-size: cover;
 background-position: left center;
 background-repeat: no-repeat;
@@ -1105,4 +1105,26 @@ v-card {
   align-items: center;
   gap: 20px; /* Espacio entre el título y el diagrama */
 }
+
+
+.column-izq {
+  width: 20%;
+  background-color: #0081a7;
+}
+
+.izq-arr {
+  margin-top: 1rem;
+}
+
+.card-perfil {
+  background-color: #f8f9fa;
+}
+
+.foto-perfil {
+  border: 4px solid #0081a7;
+}
+
+
+
+
 </style>
