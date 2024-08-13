@@ -98,16 +98,30 @@
         "
         class="content0"
       >
-        <v-card class="pa-5" outlined>
-          <h1 class="title text-center">KALEV</h1>
-          <p class="text-center">
-            EN BUSQUEDA DE <span id="titulos"></span>
-          </p>
-          <v-img
-            src="./components/icons/kalev.png"
-            class="mx-auto"
-            alt="Kalev Logo"
-          ></v-img>
+          <v-card class="pa-5" outlined>
+            <div class="header">
+              <div class="text-content">
+                <h1 class="title">
+                  <div class="gradient-text">KALEV</div>
+                  
+                </h1>
+                <h2 class="subtitle">
+                  <span id="k">Inteligencia artificial</span> <br><span id="a">para estrategias</span>  <br> 
+                  <span id="le">de aprendizaje</span> <span id="v">personalizadas</span>
+                </h2>
+              </div>
+              <img
+                width="200"
+                src="./assets/KALEVFINAL_1.png"
+                class="image"
+                alt="Kalev Logo"
+              />
+            </div>
+
+            <div class="content">
+              <p>buscando...</p>
+              <span v-if="showWord" :key="currentWord" class="fade">{{ currentWord }}</span>
+            </div>
         </v-card>
       </div>
 
@@ -118,7 +132,7 @@
           <!-- Campo de Nombre -->
           <v-text-field
             label="Nombre"
-            v-model="formData.name"
+            v-model="formDataCurso.name"
             prepend-icon="mdi-account"
             required
           ></v-text-field>
@@ -126,7 +140,7 @@
           <!-- Campo de Descripción -->
           <v-textarea
             label="Descripción"
-            v-model="formData.description"
+            v-model="formDataCurso.description"
             prepend-icon="mdi-note-text"
             required
           ></v-textarea>
@@ -135,7 +149,7 @@
           <v-select
             label="Seleccionar Parcial"
             :items="partials"
-            v-model="formData.selectedPartial"
+            v-model="formDataCurso.selectedPartial"
             prepend-icon="mdi-calendar"
             required
           ></v-select>
@@ -144,7 +158,7 @@
           <v-select
             label="Seleccionar Grupos"
             :items="groups"
-            v-model="formData.selectedGroups"
+            v-model="formDataCurso.selectedGroups"
             prepend-icon="mdi-account-group"
             multiple
             chips
@@ -187,8 +201,8 @@
           </v-row>
 
           <!-- Mostrar Materia Seleccionada -->
-          <v-alert v-if="formData.selectedSubject" type="info" dismissible>
-            Materia seleccionada: {{ formData.selectedSubject }}
+          <v-alert v-if="formDataCurso.selectedSubject" type="info" dismissible>
+            Materia seleccionada: {{ formDataCurso.selectedSubject }}
           </v-alert>
 
           <!-- Botón de Enviar -->
@@ -198,12 +212,128 @@
 
       <!-- agregar activida -->
       <div v-if="mostrarAgregarActividad" class="agregarActividad">
-        <h1>agregar act</h1>
+        <h1>agregar actividad</h1>
+        <v-form ref="form">
+          <!-- Campo de Nombre -->
+          <v-text-field
+            label="Nombre"
+            v-model="formDataAct.name"
+            prepend-icon="mdi-account"
+            required
+          ></v-text-field>
+
+          <!-- Campo de Descripción -->
+          <v-textarea
+            label="Descripción"
+            v-model="formDataAct.description"
+            prepend-icon="mdi-note-text"
+            required
+          ></v-textarea>
+
+          <!-- Campo de Fecha de Entrega -->
+          <v-menu
+            v-model="menuDate"
+            :close-on-content-click="false"
+            transition="scale-transition"
+            offset-y
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-text-field
+                v-model="formDataAct.dueDate"
+                label="Fecha de Entrega"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-bind="attrs"
+                v-on="on"
+                class="date-field"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="formDataAct.dueDate"
+              @input="menuDate = false"
+              class="date-picker"
+              :first-day-of-week="1" 
+            ></v-date-picker>
+          </v-menu>
+
+          <!-- Seleccionar Cursos -->
+          <v-select
+            label="Seleccionar Cursos"
+            :items="courses"
+            v-model="formDataAct.selectedCourses"
+            prepend-icon="mdi-school"
+            multiple
+            chips
+            required
+          ></v-select>
+
+          <!-- Seleccionar Imágenes -->
+          <v-row align="center" justify="center" class="mb-4">
+            <v-col cols="12" sm="12" class="text-center">
+              <div class="image-selection-container">
+                <div
+                  v-for="image in images"
+                  :key="image.value"
+                  class="image-selection"
+                  :class="{ selected: formDataAct.selectedImages.includes(image.value) }"
+                  @click="toggleImageSelection(image.value)"
+                >
+                  <v-img
+                    :src="image.src"
+                    :alt="image.alt"
+                    class="image-thumbnail"
+                    contain
+                  ></v-img>
+                  <span class="image-label">{{ image.label }}</span>
+                </div>
+              </div>
+            </v-col>
+          </v-row>
+
+          <!-- Mostrar Imágenes Seleccionadas -->
+          <v-alert v-if="formDataAct.selectedImages.length > 0" type="info" dismissible>
+            Imágenes seleccionadas: {{ formDataAct.selectedImages.join(', ') }}
+          </v-alert>
+
+          <!-- Botón de Enviar -->
+          <v-btn color="success" @click="submitForm">Enviar</v-btn>
+        </v-form>
       </div>
 
       <!-- Cursos -->
       <div v-if="mostrarCursos" class="cursosExistentes">
         <h1>CURSOS</h1>
+        <v-container class="d-flex flex-wrap justify-center">
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              Español
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              Español 4A
+            </v-card-subtitle>
+          </v-card>
+
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              Español
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              Español 5A
+            </v-card-subtitle>
+          </v-card>
+
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              Geografia
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              Geografia 4A
+            </v-card-subtitle>
+          </v-card>
+        </v-container>
+
+
         <!-- Botón Flotante Agregar-->
           <div class="fab-button-curso" @click="ventanaAgregarCursos">
               <v-icon>mdi-plus</v-icon>
@@ -213,12 +343,89 @@
 
       <!-- Grupos -->
       <div v-if="mostrarGrupos" class="gruposExistentes">
-        <h1>GRUPOS</h1>
+        <div class="header-container-alumnos">
+          <h1>ALUMNOS</h1>
+          <div class="spider-diagram">
+            <!-- SVG del diagrama de araña -->
+            <svg width="150" height="150" viewBox="-150 -150 300 300" xmlns="http://www.w3.org/2000/svg">
+              <!-- Círculo exterior decorativo -->
+
+              <!-- Líneas principales -->
+              <line x1="0" y1="-100" x2="0" y2="100" stroke="#847D64" stroke-width="2" />
+              <line x1="-100" y1="0" x2="100" y2="0" stroke="#847D64" stroke-width="2" />
+
+
+              <!-- Polígono interior (pequeño) -->
+              <polygon points="0,-90 50,0 0,60 -100,0" fill="#FFD700" opacity="0.5" />
+
+              <!-- Letras en las esquinas -->
+              <text x="0" y="-110" text-anchor="middle" font-size="20" fill="black">K</text>
+              <text x="110" y="10" text-anchor="middle" font-size="20" fill="black">A</text>
+              <text x="0" y="130" text-anchor="middle" font-size="20" fill="black">LE</text>
+              <text x="-110" y="10" text-anchor="middle" font-size="20" fill="black">V</text>
+            </svg>
+
+          </div>
+        </div>
+
+        <v-container class="d-flex flex-wrap justify-center">
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              4A
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              46 alumnos  
+            </v-card-subtitle>
+          </v-card>
+
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              4B
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              38 alumnos
+            </v-card-subtitle>
+          </v-card>
+
+          <v-card class="custom-card-curso" outlined>
+            <v-card-title class="title-curso d-flex justify-center align-center">
+              5A
+            </v-card-title>
+            <v-card-subtitle class="subtitle-curso text-center mb-3">
+              36 alumnos
+            </v-card-subtitle>
+          </v-card>
+        </v-container>
+
       </div>
 
       <!-- Alumnos -->
       <div v-if="mostrarAlumnos" class="alumnosExistentes">
-        <h1>ALUMNOS</h1>
+        <div class="header-container-alumnos">
+          <h1>ALUMNOS</h1>
+          <div class="spider-diagram">
+            <!-- SVG del diagrama de araña -->
+            <svg width="150" height="150" viewBox="-150 -150 300 300" xmlns="http://www.w3.org/2000/svg">
+              <!-- Círculo exterior decorativo -->
+
+              <!-- Líneas principales -->
+              <line x1="0" y1="-100" x2="0" y2="100" stroke="#847D64" stroke-width="2" />
+              <line x1="-100" y1="0" x2="100" y2="0" stroke="#847D64" stroke-width="2" />
+
+
+              <!-- Polígono interior (pequeño) -->
+              <polygon points="0,-90 50,0 0,60 -100,0" fill="#FFD700" opacity="0.5" />
+
+              <!-- Letras en las esquinas -->
+              <text x="0" y="-110" text-anchor="middle" font-size="20" fill="black">K</text>
+              <text x="110" y="10" text-anchor="middle" font-size="20" fill="black">A</text>
+              <text x="0" y="130" text-anchor="middle" font-size="20" fill="black">LE</text>
+              <text x="-110" y="10" text-anchor="middle" font-size="20" fill="black">V</text>
+            </svg>
+
+          </div>
+        </div>
+
         <!-- Aquí se integra el código HTML de los alumnos -->
         <v-app>
             <v-container>
@@ -349,7 +556,13 @@ export default {
       searchDOB: '',
 
 
-      formData: {
+      words: ["apoyar", "innovar", "aprendizaje", "mejorar"],
+      currentWord: "",
+      wordIndex: 0,
+      showWord: true,
+
+
+      formDataCurso: {
         name: '',
         description: '',
         selectedPartial: null,
@@ -358,6 +571,22 @@ export default {
       },
       partials: ['Primer Parcial', 'Segundo Parcial', 'Tercer Parcial'],
       groups: ['Grupo A', 'Grupo B', 'Grupo C'],
+
+      formDataAct: {
+        name: '',
+        description: '',
+        dueDate: '',
+        selectedCourses: [],  // Cambiado a un array para seleccionar múltiples cursos
+        selectedImages: []
+      },
+      menuDate: false,
+      courses: ['Curso 1', 'Curso 2', 'Curso 3'],
+      images: [
+        { src: 'https://via.placeholder.com/150', alt: 'Imagen 1', value: 'image1', label: 'Imagen 1' },
+        { src: 'https://via.placeholder.com/150', alt: 'Imagen 2', value: 'image2', label: 'Imagen 2' },
+        { src: 'https://via.placeholder.com/150', alt: 'Imagen 3', value: 'image3', label: 'Imagen 3' },
+        { src: 'https://via.placeholder.com/150', alt: 'Imagen 4', value: 'image4', label: 'Imagen 4' }
+      ],
 
 
       headers_act: [
@@ -429,6 +658,9 @@ export default {
       });
     }
   },
+  mounted() {
+    this.startWordRotation();
+  },
   methods: {
     editItem(item) {
       alert('Editar: ' + item.name + ' - ' + item.learning_type);
@@ -441,6 +673,25 @@ export default {
       this.selectedLearningType = null;
     },
 
+    startWordRotation() {
+      this.currentWord = this.words[this.wordIndex]; // Mostrar la primera palabra
+      setInterval(() => {
+        this.showWord = false; // Oculta el span antes de cambiar la palabra
+        setTimeout(() => {
+          this.wordIndex = (this.wordIndex + 1) % this.words.length; // Avanza al siguiente índice
+          this.currentWord = this.words[this.wordIndex]; // Actualiza la palabra actual
+          this.showWord = true; // Vuelve a mostrar el span con la nueva palabra
+        }, 500); // Tiempo de desvanecimiento
+      }, 2500); // Tiempo entre cambios de palabras
+    },
+    toggleImageSelection(imageValue) {
+      const index = this.formDataAct.selectedImages.indexOf(imageValue);
+      if (index === -1) {
+        this.formDataAct.selectedImages.push(imageValue);
+      } else {
+        this.formDataAct.selectedImages.splice(index, 1);
+      }
+    },
 
     ventanaAgregarActividad() {
       this.mostrarAgregarCurso = false;
@@ -493,13 +744,13 @@ export default {
 
 
     selectSubjectMat() {
-      this.formData.selectedSubject = 'Matemáticas';
+      this.formDataCurso.selectedSubject = 'Matemáticas';
     },
     selectSubjectEsp() {
-      this.formData.selectedSubject = 'Español';
+      this.formDataCurso.selectedSubject = 'Español';
     },
     selectSubjectGeo() {
-      this.formData.selectedSubject = 'Geografia';
+      this.formDataCurso.selectedSubject = 'Geografia';
     },
     submitForm() {
       if (this.$refs.form.validate()) {
@@ -607,7 +858,7 @@ export default {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background-color: #1976D2; /* Color de fondo del botón */
+    background-color: #ff5147; /* Color de fondo del botón */
     color: white;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -617,7 +868,7 @@ export default {
     z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
 }
 .fab-button-curso:hover,.fab-button-acti:hover {
-    background-color: #1565C0; /* Color de fondo del botón al pasar el ratón */
+    background-color: #f59f00; /* Color de fondo del botón al pasar el ratón */
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
 }
 .fab-button-curso .mdi,.fab-button-acti .mdi {
@@ -674,5 +925,184 @@ export default {
   color: #424242;
   text-align: center;
   display: block;
+}
+
+
+/*************************************************************************** */
+.content0 {
+  background-image: url('./assets/saludokalevchiquititito.png');
+background-size: cover;
+background-position: left center;
+background-repeat: no-repeat;
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 0px;
+box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px; /* Aumenta el espacio entre el texto y la imagen */
+}
+
+.text-content {
+  max-width: 70%; /* Aumenta el espacio para el texto */
+  text-align: left;
+}
+
+.image {
+  max-width: 300px; /* Aumenta el tamaño máximo de la imagen */
+  height: auto;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  font-size: 35px; /* Aumenta el tamaño del texto de "buscando..." */
+  margin-top: 20px; /* Añade un margen superior para separar del texto anterior */
+}
+
+span.fade {
+  font-weight: bold;
+  margin-left: 10px; /* Aumenta el espacio entre "buscando..." y la palabra en fade */
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+  font-size: 40px; /* Aumenta el tamaño de la palabra */
+}
+
+.gradient-text {
+  font-size: 70px; /* Aumenta el tamaño del texto de "KALEV" */
+  font-weight: bold;
+  background: linear-gradient(to right, 
+      #0081a7, 
+      #70ff70, 
+      #f59f00, 
+      #ff5147, 
+      #0081a7);
+  background-size: 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 8s infinite linear;
+}
+
+@keyframes gradient-shift {
+  0% {
+      background-position: 0% 50%;
+  }
+  100% {
+      background-position: 100% 50%;
+  }
+}
+
+#k {
+  color: #0081a7;
+  font-size: 40px; /* Aumenta el tamaño del texto */
+}
+
+#a {
+  color: #70ff70;
+  font-size: 40px; /* Aumenta el tamaño del texto */
+}
+
+#le {
+  color: #f59f00;
+  font-size: 40px; /* Aumenta el tamaño del texto */
+}
+
+#v {
+  color: #ff5147;
+  font-size: 40px; /* Aumenta el tamaño del texto */
+}
+
+v-card {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Añade una sombra para darle profundidad */
+  border-radius: 15px; /* Redondea los bordes */
+  border: 2px solid #0081a7; /* Añade un borde colorido */
+  padding: 10px; /* Aumenta el padding para dar más espacio interno */
+}
+
+/** **************************************************/
+
+.custom-card-curso {
+  width: 250px; /* Ajusta el ancho de las tarjetas según tus necesidades */
+  margin: 15px;
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+  transition: transform 0.3s, box-shadow 0.3s; /* Animación para interacción */
+}
+
+.custom-card-curso:hover {
+  transform: scale(1.05); /* Efecto de zoom al pasar el mouse */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al pasar el mouse */
+}
+
+.title-curso {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333; /* Color del texto del título */
+}
+
+.subtitle-curso {
+  font-size: 1rem;
+  color: #666; /* Color del texto del subtítulo */
+} 
+
+.date-field {
+  background-color: #fff;
+  border-radius: 4px;
+  padding-right: 32px; /* Espacio para el ícono del calendario */
+}
+
+.date-picker {
+  border-radius: 4px;
+}
+
+.image-selection-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.image-selection {
+  width: 150px;
+  margin: 10px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: border-color 0.3s;
+  cursor: pointer;
+}
+
+.image-selection.selected {
+  border-color: #1976d2; /* Color de la selección */
+}
+
+.image-thumbnail {
+  width: 100%;
+  height: 100%;
+}
+
+.image-label {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+
+.spider-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.header-container-alumnos {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Espacio entre el título y el diagrama */
 }
 </style>
