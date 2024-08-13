@@ -6,54 +6,89 @@
         <!-- Perfil Aquí -->
         <v-row class="d-flex justify-center">
           <v-col cols="12" md="12">
-            <v-card class="mx-auto" max-width="500">
-              <v-avatar class="mx-auto mt-4" size="100">
+            <v-card class="mx-auto card-perfil" max-width="375" elevation="10">
+              <v-avatar class="mx-auto mt-4 foto-perfil" size="150">
                 <v-img src="https://cdn.vuetifyjs.com/images/john.jpg"></v-img>
               </v-avatar>
-              <v-card-title class="justify-center">Jaime Galindo</v-card-title>
-              <v-card-subtitle class="justify-center">Primaria: Benito Juárez</v-card-subtitle>
+              <v-card-title class="justify-center nombre-perfil">Jaime Galindo</v-card-title>
+              <v-card-subtitle class="justify-center escuela-perfil">Primaria: Benito Juárez</v-card-subtitle>
               <v-card-text class="text-center">
-                <v-icon color="blue-grey">mdi-email</v-icon>
-                <span class="ml-2">gavilan@utcv.com</span>
+                <v-icon color="primary">mdi-email</v-icon>
+                <span class="ml-2 desc-perfil">gavilan@utcv.com</span>
               </v-card-text>
               <v-card-text class="text-center">
-                <v-icon color="blue-grey">mdi-phone</v-icon>
-                <span class="ml-2">+123 456 7890</span>
+                <v-icon color="primary">mdi-phone</v-icon>
+                <span class="ml-2 desc-perfil">+123 456 7890</span>
               </v-card-text>
               <v-card-text class="text-center">
-                <v-icon color="blue-grey">mdi-map-marker</v-icon>
-                <span class="ml-2">Cuitlahuac, Ver.</span>
+                <v-icon color="primary">mdi-map-marker</v-icon>
+                <span class="ml-2 desc-perfil">Cuitlahuac, Ver.</span>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
+
       </div>
+
       <div class="izq-aba">
+
         <v-col cols="12">
           <v-btn 
+            class="izq-btn"
             rounded="xl" 
             size="x-large" 
             block 
+            elevation="10"
             @click="VentanaCursosExistentes">
-            <v-icon left>mdi-book-multiple</v-icon> CURSOS
+            <v-icon left>mdi-certificate</v-icon> CURSOS
           </v-btn>
         </v-col>
+
         <v-col cols="12">
           <v-btn 
-            rounded="xl"
-            size="x-large"
-            block
+            class="izq-btn"
+            rounded="xl" 
+            size="x-large" 
+            block 
+            elevation="10"
             @click="showGrupos">
             <v-icon left>mdi-account-group</v-icon> GRUPOS
           </v-btn>
         </v-col>
+
+        <v-col cols="12">
+          <v-btn 
+            class="izq-btn"
+            rounded="xl" 
+            size="x-large" 
+            block 
+            elevation="10"
+            @click="">
+            <v-icon left>mdi-account-school</v-icon> ALUMNOS 
+          </v-btn>
+        </v-col>
+
+        <v-col cols="12">
+          <v-btn 
+            class="izq-btn"
+            rounded="xl" 
+            size="x-large" 
+            block 
+            elevation="10"
+            @click="">
+            <v-icon left>mdi-clipboard-text</v-icon> ACTIVIDADES
+          </v-btn>
+        </v-col>
+
       </div>
     </div>
-
+    
     <!-- Columna Central -->
     <div class="column-cent">
       <!-- Contenido Inicial -->
-      <div v-if="!mostrarContenidoCurso && !mostrarContenidoActividad && !MostrarVentanaCursosExistentes && !mostrarActividades && !showGruposContent" class="content0">
+      <div v-if="!mostrarContenidoCurso && 
+        !mostrarContenidoActividad && !MostrarVentanaCursosExistentes 
+        && !mostrarActividades && !showGruposContent" class="content0">
         <v-card class="pa-5" outlined>
           <h1 class="title text-center">KALEV</h1>
           <p class="text-center">
@@ -412,4 +447,57 @@ export default {
 .mb-4 {
   margin-bottom: 16px;
 }
+
+/*botones izquierda*/
+.izq-btn {
+  background-color: var(--btn-background-color, #1976D2); /* Azul por defecto */
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.izq-btn:hover {
+  background-color: var(--btn-background-color-hover, #1565C0); /* Azul más oscuro en hover */
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.izq-btn  :active {
+  background-color: var(--btn-background-color-active, #0D47A1); /* Azul aún más oscuro al hacer clic */
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+
+/*la parte del perfil */
+.card-perfil {
+  border-radius: 20px;
+  background-color: #ffffff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.foto-perfil {
+  border: 4px solid var(--v-primary-base);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nombre-perfil {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--v-primary-darken2);
+}
+
+.escuela-perfil {
+  color: var(--v-primary-lighten1);
+}
+
+.desc-perfil {
+  font-size: 1rem;
+  color: #555;
+}
+
+.desc-perfil:hover {
+  color: var(--v-primary-darken1);
+  text-decoration: underline;
+}
+
 </style>
