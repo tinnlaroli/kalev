@@ -27,68 +27,77 @@
             </v-card>
           </v-col>
         </v-row>
-
       </div>
 
       <div class="izq-aba">
-
         <v-col cols="12">
-          <v-btn 
+          <v-btn
             class="izq-btn"
-            rounded="xl" 
-            size="x-large" 
-            block 
+            rounded="xl"
+            size="x-large"
+            block
             elevation="10"
-            @click="VentanaCursosExistentes">
+            @click="ventanaCursos"
+          >
             <v-icon left>mdi-certificate</v-icon> CURSOS
           </v-btn>
         </v-col>
 
         <v-col cols="12">
-          <v-btn 
+          <v-btn
             class="izq-btn"
-            rounded="xl" 
-            size="x-large" 
-            block 
+            rounded="xl"
+            size="x-large"
+            block
             elevation="10"
-            @click="showGrupos">
+            @click="ventanaGrupos"
+          >
             <v-icon left>mdi-account-group</v-icon> GRUPOS
           </v-btn>
         </v-col>
 
         <v-col cols="12">
-          <v-btn 
+          <v-btn
             class="izq-btn"
-            rounded="xl" 
-            size="x-large" 
-            block 
+            rounded="xl"
+            size="x-large"
+            block
             elevation="10"
-            @click="">
-            <v-icon left>mdi-account-school</v-icon> ALUMNOS 
+            @click="ventanaAlumnos"
+          >
+            <v-icon left>mdi-account-school</v-icon> ALUMNOS
           </v-btn>
         </v-col>
 
         <v-col cols="12">
-          <v-btn 
+          <v-btn
             class="izq-btn"
-            rounded="xl" 
-            size="x-large" 
-            block 
+            rounded="xl"
+            size="x-large"
+            block
             elevation="10"
-            @click="">
+            @click="ventanaActividades"
+          >
             <v-icon left>mdi-clipboard-text</v-icon> ACTIVIDADES
           </v-btn>
         </v-col>
-
       </div>
     </div>
-    
+
     <!-- Columna Central -->
     <div class="column-cent">
       <!-- Contenido Inicial -->
-      <div v-if="!mostrarContenidoCurso && 
-        !mostrarContenidoActividad && !MostrarVentanaCursosExistentes 
-        && !mostrarActividades && !showGruposContent" class="content0">
+      <div
+        v-if="
+          !mostrarAgregarCurso &&
+          !mostrarAgregarActividad &&
+          !mostrarCursos &&
+          !mostrarGrupos &&
+          !mostrarAlumnos &&
+          !mostrarActividades
+        "
+        class="content0"
+      >
         <v-card class="pa-5" outlined>
           <h1 class="title text-center">KALEV</h1>
           <p class="text-center">
@@ -102,289 +111,403 @@
         </v-card>
       </div>
 
-      <!-- Agregar Curso -->
-      <div v-if="mostrarContenidoCurso" class="content1">
-        <v-card class="pa-5" outlined>
-          <h1>AGREGAR CURSO</h1>
-          <p>En esta parte se agregará el curso</p>
-          <v-form @submit.prevent="submitFormCurso" class="styled-form">
-            <v-container>
-              <v-row>
-                <v-col v-for="(materia, index) in materias" :key="index" cols="12" sm="4">
-                  <MateriaCard :materia="materia" :is-selected="selectedMaterias.includes(materia)" @select-materia="toggleMateriaSelection" />
-                </v-col>
-              </v-row>
+      <!-- agregar curso -->
+      <div v-if="mostrarAgregarCurso" class="agregarCursos">
+        <h1>agregar curso</h1>
+        <v-form ref="form">
+          <!-- Campo de Nombre -->
+          <v-text-field
+            label="Nombre"
+            v-model="formData.name"
+            prepend-icon="mdi-account"
+            required
+          ></v-text-field>
 
-              <v-text-field label="Nombre" v-model="nombre" outlined />
-              <v-text-field label="Descripción" v-model="descripcion" outlined />
-              <v-select label="Parcial" v-model="parcial" :items="['Primero', 'Segundo', 'Tercero']" outlined />
-              <v-checkbox-group v-model="grupos">
-                <v-checkbox label="Grupo 4-A" value="grupo-a" />
-                <v-checkbox label="Grupo 4-B" value="grupo-b" />
-                <v-checkbox label="Grupo 5-A" value="grupo-c" />
-                <v-checkbox label="Grupo 5-B" value="grupo-d" />
-                <v-checkbox label="Grupo 6-A" value="grupo-e" />
-                <v-checkbox label="Grupo 6-B" value="grupo-f" />
-              </v-checkbox-group>
+          <!-- Campo de Descripción -->
+          <v-textarea
+            label="Descripción"
+            v-model="formData.description"
+            prepend-icon="mdi-note-text"
+            required
+          ></v-textarea>
 
-              <v-btn type="submit" color="primary" class="mt-4">CREAR</v-btn>
-            </v-container>
-          </v-form>
-        </v-card>
-      </div>
+          <!-- Seleccionar Parcial -->
+          <v-select
+            label="Seleccionar Parcial"
+            :items="partials"
+            v-model="formData.selectedPartial"
+            prepend-icon="mdi-calendar"
+            required
+          ></v-select>
 
-      <!-- Agregar Actividad -->
-      <div v-if="mostrarContenidoActividad" class="content2">
-        <v-card class="pa-5" outlined>
-          <h1>AGREGAR ACTIVIDAD</h1>
-          <v-form @submit.prevent="submitFormActividad" class="styled-form">
-            <v-text-field label="Nombre" v-model="nombre" outlined />
-            <v-text-field label="Descripción" v-model="descripcion" outlined />
-            <v-text-field label="Fecha Entrega" v-model="fechaEntrega" type="date" outlined />
-            <v-select label="Curso" v-model="paraQueCurso" :items="['cursoPierreCuartoPrimerParcial', 'cursoLaniunCuartoPrimerParcial', 'cursoGeroCuartoPrimerParcial']" outlined />
-            <v-select label="Temas" v-model="paraQueTema" :items="['tema1', 'tema2', 'tema3']" outlined />
+          <!-- Seleccionar Grupos -->
+          <v-select
+            label="Seleccionar Grupos"
+            :items="groups"
+            v-model="formData.selectedGroups"
+            prepend-icon="mdi-account-group"
+            multiple
+            chips
+            required
+          ></v-select>
 
-            <v-row>
-              <v-col v-for="(estilo, index) in estilos" :key="index" cols="12" sm="4">
-                <EstiloAprendizajeCard :estilo="estilo" :is-selected="selectedEstilos.includes(estilo)" @select-estilo="toggleEstiloSelection" />
-              </v-col>
-            </v-row>
-
-            <v-btn type="submit" color="primary" class="mt-4">CREAR</v-btn>
-          </v-form>
-        </v-card>
-      </div>
-      
-      <!-- Cursos Existentes -->
-      <div v-if="MostrarVentanaCursosExistentes" class="cursosExistentes">
-        <v-card class="pa-5" outlined>
-          <v-row>
-            <v-col v-for="(curso, index) in cursos" :key="index" cols="12" sm="4">
-              <v-card class="text-center">
-                <v-img :src="curso.image" height="100px" />
-                <v-card-title>{{ curso.name }}</v-card-title>
-                <v-btn @click="VentanaActividadesExistentes">{{ curso.name }}</v-btn>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-card>
-      </div>
-
-      <!-- Actividades -->
-      <div v-if="mostrarActividades" class="actividades">
-        <v-card class="pa-5" outlined>
-          <h1>ACTIVIDADES</h1>
-          <v-select 
-            :items="parcial1" 
-            label="Parciales" 
-            v-model="selectedParcial" 
-            @change="onChange" 
-            outlined />
-          <v-card v-if="selectedParcial" :title="content[selectedParcial].title" :subtitle="content[selectedParcial].subtitle" :prepend-icon="content[selectedParcial].prependIcon" :append-icon="content[selectedParcial].appendIcon" outlined>
-            <v-card-actions>
-              <v-btn @click="showActividad" color="primary">Asignar calificaciones</v-btn>
-            </v-card-actions>
-          </v-card>
-
-          <v-row v-if="showDiv">
-            <v-col cols="6">
-              <v-btn @click="showGroup('A')" icon block>
-                <v-icon>mdi-account-group</v-icon> GRUPO A
-              </v-btn>
-            </v-col>
-            <v-col cols="6">
-              <v-btn @click="showGroup('B')" icon block>
-                <v-icon>mdi-account-group</v-icon> GRUPO B
-              </v-btn>
+          <!-- Seleccionar Materia con Imagen Interactiva -->
+          <v-row align="center" justify="center" class="mb-4">
+            <v-col cols="12" sm="8" class="text-center">
+              <div class="subject-selection-container">
+                <div class="subject-selection" @click="selectSubjectMat">
+                  <v-img
+                    src="https://via.placeholder.com/150"
+                    alt="Matemáticas"
+                    class="subject-image"
+                    contain
+                  ></v-img>
+                  <span class="subject-label">Matemáticas</span>
+                </div>
+                <div class="subject-selection" @click="selectSubjectEsp">
+                  <v-img
+                    src="https://via.placeholder.com/150"
+                    alt="Español"
+                    class="subject-image"
+                    contain
+                  ></v-img>
+                  <span class="subject-label">Español</span>
+                </div>
+                <div class="subject-selection" @click="selectSubjectGeo">
+                  <v-img
+                    src="https://via.placeholder.com/150"
+                    alt="Geografía"
+                    class="subject-image"
+                    contain
+                  ></v-img>
+                  <span class="subject-label">Geografía</span>
+                </div>
+              </div>
             </v-col>
           </v-row>
 
-          <div v-if="currentGroup" class="gruposCalificaciones">
-            <v-row v-if="currentGroup === 'A'">
-              <v-col>
-                <h2>GRUPO A</h2>
-                <v-list>
-                  <v-list-item v-for="(item, index) in groupAItems" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.name }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-text-field v-model.number="item.grade" label="Calificación" type="number" outlined></v-text-field>
-                    </v-list-item-action>
-                  </v-list-item>
-                </v-list>
-                <v-btn @click="saveGrades('A')" color="primary">
-                  <v-icon left>mdi-content-save</v-icon> Guardar Calificaciones
-                </v-btn>
-              </v-col>
-            </v-row>
+          <!-- Mostrar Materia Seleccionada -->
+          <v-alert v-if="formData.selectedSubject" type="info" dismissible>
+            Materia seleccionada: {{ formData.selectedSubject }}
+          </v-alert>
 
-            <v-row v-if="currentGroup === 'B'">
-              <v-col>
-                <h2>GRUPO B</h2>
-                <v-list>
-                  <v-list-item v-for="(item, index) in groupBItems" :key="index">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.name }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-text-field v-model.number="item.grade" label="Calificación" type="number" outlined></v-text-field>
-                    </v-list-item-action>
-                  </v-list-item>
-                </v-list>
-                <v-btn @click="saveGrades('B')" color="primary">
-                  <v-icon left>mdi-content-save</v-icon> Guardar Calificaciones
-                </v-btn>
-              </v-col>
-            </v-row>
+          <!-- Botón de Enviar -->
+          <v-btn color="success" @click="submitForm">Enviar</v-btn>
+        </v-form>
+      </div>
+
+      <!-- agregar activida -->
+      <div v-if="mostrarAgregarActividad" class="agregarActividad">
+        <h1>agregar act</h1>
+      </div>
+
+      <!-- Cursos -->
+      <div v-if="mostrarCursos" class="cursosExistentes">
+        <h1>CURSOS</h1>
+        <!-- Botón Flotante Agregar-->
+          <div class="fab-button-curso" @click="ventanaAgregarCursos">
+              <v-icon>mdi-plus</v-icon>
+              <span>Agregar curso</span>
           </div>
-        </v-card>
       </div>
 
       <!-- Grupos -->
-      <div v-if="showGruposContent" class="grupos">
-        <v-card class="pa-5" outlined>
-          <h1>Grupos</h1>
-          <v-select 
-            :items="['4-A', '4-B', '5-A', '5-B', '6-A', '6-B']" 
-            label="Grupo" 
-            v-model="selectedGroup" 
-            outlined 
-            class="mb-4" 
-          />
-          <v-text-field label="Buscar estudiante" v-model="buscarAlumno" outlined />
-          <v-list v-if="filteredAlumnos.length">
-            <v-list-item v-for="(alumno, index) in filteredAlumnos" :key="index">
-              <v-list-item-content>
-                <v-list-item-title>{{ alumno }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card>
+      <div v-if="mostrarGrupos" class="gruposExistentes">
+        <h1>GRUPOS</h1>
+      </div>
+
+      <!-- Alumnos -->
+      <div v-if="mostrarAlumnos" class="alumnosExistentes">
+        <h1>ALUMNOS</h1>
+        <!-- Aquí se integra el código HTML de los alumnos -->
+        <v-app>
+            <v-container>
+                <v-row>
+                    <v-col cols="12" md="6">
+                        <v-text-field
+                            v-model="searchName"
+                            label="Buscar por Nombre Completo"
+                            prepend-icon="mdi-account-search"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                        <v-text-field
+                            v-model="searchDOB"
+                            label="Buscar por Fecha de Nacimiento"
+                            prepend-icon="mdi-calendar-search"
+                            type="date"
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
+
+                <v-card class="mt-4">
+                    <v-card-title>
+                        <v-icon left>mdi-school</v-icon>
+                        Lista de Alumnos
+                    </v-card-title>
+                    <v-card-text>
+                        <v-data-table
+                            :headers_alum="headers_alum"
+                            :items="filteredStudents"
+                            class="elevation-1"
+                        >
+                            <template v-slot:item.name="{ item }">
+                                <td>{{ item.name }}</td>
+                            </template>
+                            <template v-slot:item.dob="{ item }">
+                                <td>{{ new Date(item.dob).toLocaleDateString() }}</td>
+                            </template>
+                        </v-data-table>
+                    </v-card-text>
+                </v-card>
+            </v-container>
+        </v-app>
+      </div>
+
+      <!-- Actividades -->
+      <div v-if="mostrarActividades" class="actividadesExistentes">
+        <h1>ACTIVIDADES</h1>
+        <!-- Aquí se integra el código HTML de las actividades -->
+        <v-app>
+          <v-container>
+            <!-- Filtros de búsqueda por materia y tipo de aprendizaje -->
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="selectedSubject"
+                  :items="subjects"
+                  label="Filtrar por Materia"
+                  append-icon="mdi-book"
+                  single-line
+                  hide-details
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="selectedLearningType"
+                  :items="learningTypes"
+                  label="Filtrar por Tipo de Aprendizaje"
+                  append-icon="mdi-school"
+                  single-line
+                  hide-details
+                ></v-select>
+              </v-col>
+            </v-row>
+
+            <!-- Botón para mostrar todas las actividades -->
+            <v-btn color="primary" @click="resetFilters">
+              Mostrar todas las actividades
+            </v-btn>
+
+            <!-- Tabla de Actividades -->
+            <v-card class="mt-4">
+              <v-card-title>
+                <v-icon left>mdi-book-open-variant</v-icon>
+                Lista de Actividades Académicas
+              </v-card-title>
+              <v-card-text>
+                <v-data-table
+                  :headers_act="headers_act"
+                  :items="filteredActivities"
+                  class="elevation-1"
+                >
+                  <template v-slot:item.actions="{ item }">
+                    <v-icon small @click="editItem(item)">mdi-pencil</v-icon>
+                    <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
+                  </template>
+                </v-data-table>
+              </v-card-text>
+            </v-card>
+          </v-container>
+        </v-app>
+
+        <!-- Botón Flotante Agregar-->
+        <div class="fab-button-acti" @click="ventanaAgregarActividad">
+              <v-icon>mdi-plus</v-icon>
+              <span>Agregar actividad</span>
+        </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import MateriaCard from "./components/MateriaCard.vue";
-import EstiloAprendizajeCard from "./components/EstiloAprendizajeCard.vue";
-
 export default {
   data() {
     return {
-      mostrarContenidoCurso: false,
-      mostrarContenidoActividad: false,
-      MostrarVentanaCursosExistentes: false,
+      mostrarAgregarCurso: false,
+      mostrarAgregarActividad: false,
+      mostrarCursos: false,
+      mostrarGrupos: false,
+      mostrarAlumnos: false,
       mostrarActividades: false,
-      showGruposContent: false,
-      selectedMaterias: [],
-      selectedEstilos: [],
-      nombre: "",
-      descripcion: "",
-      parcial: "",
-      grupos: [],
-      cursos: [
-        { name: "Curso 1", image: "path_to_image1" },
-        { name: "Curso 2", image: "path_to_image2" },
-      ],
-      estilos: ["Visual", "Auditivo", "Kinestésico"],
-      paraQueCurso: "",
-      paraQueTema: "",
-      fechaEntrega: "",
-      content: {
-        parcial1: {
-          title: "Parcial 1",
-          subtitle: "Contenido del primer parcial",
-          prependIcon: "mdi-book",
-          appendIcon: "mdi-chevron-right",
-        },
+
+      selectedSubject: null,
+      selectedLearningType: null,
+      searchName: '',
+      searchDOB: '',
+
+
+      formData: {
+        name: '',
+        description: '',
+        selectedPartial: null,
+        selectedGroups: [],
+        selectedSubject: null,
       },
-      parcial1: ["Parcial 1", "Parcial 2", "Parcial 3"],
-      selectedParcial: "",
-      showDiv: false,
-      currentGroup: null,
-      groupAItems: [
-        { name: "Estudiante 1", grade: 0 },
-        { name: "Estudiante 2", grade: 0 },
+      partials: ['Primer Parcial', 'Segundo Parcial', 'Tercer Parcial'],
+      groups: ['Grupo A', 'Grupo B', 'Grupo C'],
+
+
+      headers_act: [
+        { text: 'Nombre', value: 'name' },
+        { text: 'Descripción', value: 'description' },
+        { text: 'Fecha de Entrega', value: 'due_date' },
+        { text: 'Tipo de Aprendizaje', value: 'learning_type' },
+        { text: 'Materia', value: 'subject' },
+        { text: 'Acciones', value: 'actions', sortable: false }
       ],
-      groupBItems: [
-        { name: "Estudiante 3", grade: 0 },
-        { name: "Estudiante 4", grade: 0 },
+      subjects: ['Español', 'Matemáticas', 'Geografía'],
+      learningTypes: ['Lectura', 'Auditivo', 'Escritura', 'Kinestésico', 'Visual'],
+      activities: [
+        { name: 'Lectura de Poemas', description: 'Leer y analizar un poema.', due_date: '2024-09-10', learning_type: 'Lectura', subject: 'Español' },
+        { name: 'Debate de Ideas', description: 'Debate sobre temas de interés.', due_date: '2024-09-12', learning_type: 'Auditivo', subject: 'Español' },
+        { name: 'Redacción de Ensayo', description: 'Escribir un ensayo sobre un tema libre.', due_date: '2024-09-15', learning_type: 'Escritura', subject: 'Español' },
+        { name: 'Dramatización', description: 'Dramatizar una escena literaria.', due_date: '2024-09-17', learning_type: 'Kinestésico', subject: 'Español' },
+        { name: 'Análisis Visual', description: 'Analizar imágenes y cuadros.', due_date: '2024-09-20', learning_type: 'Visual', subject: 'Español' },
+        { name: 'Problemas Matemáticos', description: 'Resolver problemas de lógica.', due_date: '2024-09-11', learning_type: 'Lectura', subject: 'Matemáticas' },
+        { name: 'Juegos Numéricos', description: 'Juego de números en equipo.', due_date: '2024-09-13', learning_type: 'Kinestésico', subject: 'Matemáticas' },
+        { name: 'Cálculo Mental', description: 'Ejercicios de cálculo rápido.', due_date: '2024-09-16', learning_type: 'Auditivo', subject: 'Matemáticas' },
+        { name: 'Geometría Visual', description: 'Dibujar figuras geométricas.', due_date: '2024-09-18', learning_type: 'Visual', subject: 'Matemáticas' },
+        { name: 'Explicación de Teoremas', description: 'Redactar y explicar teoremas.', due_date: '2024-09-21', learning_type: 'Escritura', subject: 'Matemáticas' },
+        { name: 'Mapa Conceptual', description: 'Crear un mapa conceptual del tema.', due_date: '2024-09-09', learning_type: 'Visual', subject: 'Geografía' },
+        { name: 'Explicación Oral', description: 'Exponer un tema en clase.', due_date: '2024-09-14', learning_type: 'Auditivo', subject: 'Geografía' },
+        { name: 'Investigación Escrita', description: 'Investigar y redactar sobre un país.', due_date: '2024-09-19', learning_type: 'Escritura', subject: 'Geografía' },
+        { name: 'Simulación de Viaje', description: 'Simular un viaje geográfico.', due_date: '2024-09-22', learning_type: 'Kinestésico', subject: 'Geografía' },
+        { name: 'Lectura de Mapas', description: 'Leer e interpretar mapas.', due_date: '2024-09-25', learning_type: 'Lectura', subject: 'Geografía' }
       ],
-      selectedGroup: "",
-      buscarAlumno: "",
-      alumnos: ["Alumno 1", "Alumno 2", "Alumno 3", "Alumno 4"],
+
+
+      headers_alum: [
+        { text: 'Nombre Completo', value: 'name' },
+        { text: 'Fecha de Nacimiento', value: 'dob' }
+      ],
+      students: [
+        { name: 'Juan Pérez García', dob: '2012-01-15' },
+        { name: 'Ana Gómez Martínez', dob: '2011-03-22' },
+        { name: 'Luis Martínez Fernández', dob: '2012-06-30' },
+        { name: 'Maria Fernández López', dob: '2010-08-09' },
+        { name: 'Pedro Sánchez Romero', dob: '2011-11-25' },
+        { name: 'Sofía Rodríguez Moreno', dob: '2012-02-14' },
+        { name: 'Carlos López García', dob: '2011-07-18' },
+        { name: 'Laura González Pérez', dob: '2012-09-04' },
+        { name: 'José Torres Díaz', dob: '2010-12-05' },
+        { name: 'Carmen Morales Ruiz', dob: '2011-05-19' },
+        { name: 'Miguel Álvarez Castillo', dob: '2012-10-11' },
+        { name: 'Patricia Castro Martínez', dob: '2011-01-27' },
+        { name: 'Javier Ortega García', dob: '2010-04-03' },
+        { name: 'Natalia Ruiz Vargas', dob: '2012-11-21' },
+        { name: 'Alberto Jiménez López', dob: '2011-06-15' }
+      ]
     };
   },
   computed: {
-    filteredAlumnos() {
-      return this.alumnos.filter(alumno =>
-        alumno.toLowerCase().includes(this.buscarAlumno.toLowerCase())
-      );
+    filteredActivities() {
+      return this.activities.filter(activity => {
+        return (
+          (!this.selectedSubject || activity.subject === this.selectedSubject) &&
+          (!this.selectedLearningType || activity.learning_type === this.selectedLearningType)
+        );
+      });
     },
+    filteredStudents() {
+      return this.students.filter(student => {
+          const nameMatch = student.name.toLowerCase().includes(this.searchName.toLowerCase());
+          const dobMatch = this.searchDOB ? new Date(student.dob).toLocaleDateString() === new Date(this.searchDOB).toLocaleDateString() : true;
+          return nameMatch && dobMatch;
+      });
+    }
   },
   methods: {
-    VentanaCursosExistentes() {
-      this.mostrarContenidoCurso = false;
-      this.mostrarContenidoActividad = false;
-      this.MostrarVentanaCursosExistentes = true;
+    editItem(item) {
+      alert('Editar: ' + item.name + ' - ' + item.learning_type);
+    },
+    deleteItem(item) {
+      alert('Eliminar: ' + item.name + ' - ' + item.learning_type);
+    },
+    resetFilters() {
+      this.selectedSubject = null;
+      this.selectedLearningType = null;
+    },
+
+
+    ventanaAgregarActividad() {
+      this.mostrarAgregarCurso = false;
+      this.mostrarAgregarActividad = true;
+      this.mostrarCursos = false;
+      this.mostrarGrupos = false;
+      this.mostrarAlumnos = false;
       this.mostrarActividades = false;
-      this.showGruposContent = false;
     },
-    showGrupos() {
-      this.mostrarContenidoCurso = false;
-      this.mostrarContenidoActividad = false;
-      this.MostrarVentanaCursosExistentes = false;
+    ventanaAgregarCursos() {
+      this.mostrarAgregarCurso = true;
+      this.mostrarAgregarActividad = false;
+      this.mostrarCursos = false;
+      this.mostrarGrupos = false;
+      this.mostrarAlumnos = false;
       this.mostrarActividades = false;
-      this.showGruposContent = true;
     },
-    submitFormCurso() {
-      // Lógica para crear curso
+    ventanaCursos() {
+      this.mostrarAgregarCurso = false;
+      this.mostrarAgregarActividad = false;
+      this.mostrarCursos = true;
+      this.mostrarGrupos = false;
+      this.mostrarAlumnos = false;
+      this.mostrarActividades = false;
     },
-    submitFormActividad() {
-      // Lógica para crear actividad
+    ventanaGrupos() {
+      this.mostrarAgregarCurso = false;
+      this.mostrarAgregarActividad = false;
+      this.mostrarCursos = false;
+      this.mostrarGrupos = true;
+      this.mostrarAlumnos = false;
+      this.mostrarActividades = false;
     },
-    toggleMateriaSelection(materia) {
-      const index = this.selectedMaterias.indexOf(materia);
-      if (index >= 0) {
-        this.selectedMaterias.splice(index, 1);
-      } else {
-        this.selectedMaterias.push(materia);
-      }
+    ventanaAlumnos() {
+      this.mostrarAgregarCurso = false;
+      this.mostrarAgregarActividad = false;
+      this.mostrarCursos = false;
+      this.mostrarGrupos = false;
+      this.mostrarAlumnos = true;
+      this.mostrarActividades = false;
     },
-    toggleEstiloSelection(estilo) {
-      const index = this.selectedEstilos.indexOf(estilo);
-      if (index >= 0) {
-        this.selectedEstilos.splice(index, 1);
-      } else {
-        this.selectedEstilos.push(estilo);
-      }
-    },
-    VentanaActividadesExistentes() {
-      this.mostrarContenidoCurso = false;
-      this.mostrarContenidoActividad = false;
-      this.MostrarVentanaCursosExistentes = false;
+    ventanaActividades() {
+      this.mostrarAgregarCurso = false;
+      this.mostrarAgregarActividad = false;
+      this.mostrarCursos = false;
+      this.mostrarGrupos = false;
+      this.mostrarAlumnos = false;
       this.mostrarActividades = true;
-      this.showGruposContent = false;
     },
-    onChange() {
-      this.showDiv = true;
+
+
+    selectSubjectMat() {
+      this.formData.selectedSubject = 'Matemáticas';
     },
-    showGroup(group) {
-      this.currentGroup = group;
+    selectSubjectEsp() {
+      this.formData.selectedSubject = 'Español';
     },
-    saveGrades(group) {
-      // Lógica para guardar calificaciones
+    selectSubjectGeo() {
+      this.formData.selectedSubject = 'Geografia';
     },
-    showActividad() {
-      // Lógica para mostrar actividad
+    submitForm() {
+      if (this.$refs.form.validate()) {
+        alert('Formulario enviado con éxito');
+      }
     },
-  },
-  components: {
-    MateriaCard,
-    EstiloAprendizajeCard,
-  },
+
+  }
 };
 </script>
 
@@ -409,26 +532,12 @@ export default {
   margin-bottom: 20px;
 }
 
-.content0,
-.content1,
-.content2,
-.cursosExistentes,
-.actividades,
-.grupos {
+.content0 {
   margin: 20px 0;
-}
-
-.styled-form {
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .v-card {
   margin-bottom: 20px;
-}
-
-.pa-5 {
-  padding: 20px;
 }
 
 .title {
@@ -436,44 +545,34 @@ export default {
   font-weight: bold;
 }
 
-.v-btn {
-  margin-top: 10px;
-}
-
 .mx-auto {
   margin: auto;
 }
 
-.mb-4 {
-  margin-bottom: 16px;
-}
-
-/*botones izquierda*/
+/* Botones izquierda */
 .izq-btn {
-  background-color: var(--btn-background-color, #1976D2); /* Azul por defecto */
+  background-color: var(--btn-background-color, #1976D2);
   color: white;
   font-weight: bold;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .izq-btn:hover {
-  background-color: var(--btn-background-color-hover, #1565C0); /* Azul más oscuro en hover */
+  background-color: var(--btn-background-color-hover, #1565C0);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.izq-btn  :active {
-  background-color: var(--btn-background-color-active, #0D47A1); /* Azul aún más oscuro al hacer clic */
+.izq-btn:active {
+  background-color: var(--btn-background-color-active, #0D47A1);
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
 }
 
-
-/*la parte del perfil */
+/* Perfil */
 .card-perfil {
   border-radius: 20px;
   background-color: #ffffff;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
 
 .foto-perfil {
   border: 4px solid var(--v-primary-base);
@@ -500,4 +599,80 @@ export default {
   text-decoration: underline;
 }
 
+/* boton agregar */
+.fab-button-curso,.fab-button-acti {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: #1976D2; /* Color de fondo del botón */
+    color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Asegura que el botón esté sobre otros elementos */
+}
+.fab-button-curso:hover,.fab-button-acti:hover {
+    background-color: #1565C0; /* Color de fondo del botón al pasar el ratón */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+}
+.fab-button-curso .mdi,.fab-button-acti .mdi {
+    font-size: 24px; /* Tamaño del icono */
+}
+.fab-button-curso span ,.fab-button-acti span{
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: #1976D2;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 12px;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+.fab-button-curso:hover span,.fab-button-acti:hover span {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.subject-selection-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+}
+
+.subject-selection {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+  flex-grow: 1
+}
+
+.subject-selection:hover {
+  transform: scale(1.1);
+}
+
+.subject-image {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 150px;
+  height: 150px;
+}
+
+.subject-label {
+  margin-top: 8px;
+  font-weight: bold;
+  color: #424242;
+  text-align: center;
+  display: block;
+}
 </style>
